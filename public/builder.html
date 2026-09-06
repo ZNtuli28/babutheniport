@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Builder — Babutheni</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="toast-box" id="toastBox"></div>
+
+<nav>
+  <div class="container nav-inner">
+    <a class="logo" href="index.html" style="text-decoration:none">
+      <div class="logo-icon">B</div>
+      Babutheni
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="catalog.html" style="color:var(--text2);text-decoration:none;font-size:0.875rem;font-weight:500">Catalog</a></li>
+      <li id="navDash" class="hid"><a href="dashboard.html" style="color:var(--text2);text-decoration:none;font-size:0.875rem;font-weight:500">Dashboard</a></li>
+      <li id="navBuild" class="hid"><a href="builder.html" style="color:var(--text2);text-decoration:none;font-size:0.875rem;font-weight:500">Builder</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="btn btn-ghost hid" id="navOut" onclick="doLogout()">Sign out</button>
+      <a class="btn btn-sec btn-sm hid" id="navIn" href="auth.html">Sign In</a>
+      <a class="btn btn-prim btn-sm hid" id="navUp" href="auth.html?mode=signup">Get Started</a>
+      <button class="mobile-btn" onclick="toggleMenu()">Menu</button>
+    </div>
+  </div>
+</nav>
+
+<main style="padding-top:64px">
+  <div class="container dash">
+    <div class="dash-head">
+      <h1>Portfolio Builder</h1>
+      <p style="color:var(--text2)">Build and customize your professional portfolio.</p>
+    </div>
+    <div class="dash-grid">
+      <aside class="side">
+        <ul class="side-menu">
+          <li><a href="dashboard.html" style="display:block;padding:0.7rem 1rem;color:var(--text2);text-decoration:none;font-size:0.9rem;font-weight:500">Overview</a></li>
+          <li><button class="on">Edit Portfolio</button></li>
+          <li><a id="viewPortLink" href="#" style="display:block;padding:0.7rem 1rem;color:var(--text2);text-decoration:none;font-size:0.9rem;font-weight:500">View Portfolio</a></li>
+          <li><button onclick="doLogout()">Logout</button></li>
+        </ul>
+      </aside>
+      <div class="build">
+        <div class="tabs">
+          <button class="tab on" onclick="switchTab(event,'profile')">Profile</button>
+          <button class="tab" onclick="switchTab(event,'projects')">Projects</button>
+          <button class="tab" onclick="switchTab(event,'experience')">Experience</button>
+          <button class="tab" onclick="switchTab(event,'education')">Education & Certs</button>
+          <button class="tab" onclick="switchTab(event,'contact')">Contact Settings</button>
+        </div>
+
+        <div class="panel on" id="pan-profile">
+          <h3 class="mb3">Personal Information</h3>
+          <form id="profileForm">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+              <div class="form-group"><label class="form-label">First Name</label><input type="text" class="form-input" id="pFname" required></div>
+              <div class="form-group"><label class="form-label">Last Name</label><input type="text" class="form-input" id="pLname"></div>
+            </div>
+            <div class="form-group"><label class="form-label">Professional Title</label><input type="text" class="form-input" id="pTitle" placeholder="e.g. Final Year Computer Science Student"></div>
+            <div class="form-group"><label class="form-label">Location</label><input type="text" class="form-input" id="pLoc" placeholder="e.g. Johannesburg, South Africa"></div>
+            <div class="form-group"><label class="form-label">Bio</label><textarea class="form-textarea" id="pBio" placeholder="Tell us about yourself..."></textarea></div>
+            <div class="form-group"><label class="form-label">Skills (comma separated)</label><input type="text" class="form-input" id="pSkills" placeholder="React, Node.js, Python, UI/UX"></div>
+            <div style="display:flex;gap:1rem">
+              <button type="submit" class="btn btn-prim">Save Profile</button>
+              <a class="btn btn-sec" id="previewLink" href="#">Preview</a>
+            </div>
+          </form>
+        </div>
+
+        <div class="panel" id="pan-projects">
+          <div class="flex jcb aic mb3"><h3>Projects</h3><button class="btn btn-prim btn-sm" onclick="showForm('projForm')">Add Project</button></div>
+          <div class="items" id="projList"></div>
+          <div id="projForm" class="hid" style="background:rgba(255,255,255,0.03);padding:1.5rem;border-radius:var(--r);border:1px solid var(--border)">
+            <h4 class="mb2">Add New Project</h4>
+            <div class="form-group"><label class="form-label">Project Name</label><input type="text" class="form-input" id="prName"></div>
+            <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="prDesc"></textarea></div>
+            <div class="form-group"><label class="form-label">Tech Stack</label><input type="text" class="form-input" id="prTech" placeholder="e.g. React, Firebase, Tailwind"></div>
+            <div class="form-group"><label class="form-label">Demo Link</label><input type="url" class="form-input" id="prLink" placeholder="https://..."></div>
+            <div class="flex g1">
+              <button class="btn btn-prim btn-sm" onclick="saveProj()">Save</button>
+              <button class="btn btn-sec btn-sm" onclick="hideForm('projForm')">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" id="pan-experience">
+          <div class="flex jcb aic mb3"><h3>Work Experience</h3><button class="btn btn-prim btn-sm" onclick="showForm('expForm')">Add Experience</button></div>
+          <div class="items" id="expList"></div>
+          <div id="expForm" class="hid" style="background:rgba(255,255,255,0.03);padding:1.5rem;border-radius:var(--r);border:1px solid var(--border)">
+            <h4 class="mb2">Add Experience</h4>
+            <div class="form-group"><label class="form-label">Role / Title</label><input type="text" class="form-input" id="exRole"></div>
+            <div class="form-group"><label class="form-label">Company</label><input type="text" class="form-input" id="exComp"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+              <div class="form-group"><label class="form-label">Start Date</label><input type="text" class="form-input" id="exStart" placeholder="Jan 2025"></div>
+              <div class="form-group"><label class="form-label">End Date</label><input type="text" class="form-input" id="exEnd" placeholder="Present"></div>
+            </div>
+            <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="exDesc"></textarea></div>
+            <div class="flex g1">
+              <button class="btn btn-prim btn-sm" onclick="saveExp()">Save</button>
+              <button class="btn btn-sec btn-sm" onclick="hideForm('expForm')">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" id="pan-education">
+          <div class="flex jcb aic mb3"><h3>Education & Certifications</h3><button class="btn btn-prim btn-sm" onclick="showForm('eduForm')">Add Education</button></div>
+          <div class="items" id="eduList"></div>
+          <div id="eduForm" class="hid" style="background:rgba(255,255,255,0.03);padding:1.5rem;border-radius:var(--r);border:1px solid var(--border)">
+            <h4 class="mb2">Add Education / Certificate</h4>
+            <div class="form-group"><label class="form-label">Institution / Provider</label><input type="text" class="form-input" id="edInst"></div>
+            <div class="form-group"><label class="form-label">Degree / Certificate</label><input type="text" class="form-input" id="edDeg"></div>
+            <div class="form-group"><label class="form-label">Year</label><input type="text" class="form-input" id="edYear" placeholder="2022 - 2026"></div>
+            <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="edDesc"></textarea></div>
+            <div class="flex g1">
+              <button class="btn btn-prim btn-sm" onclick="saveEdu()">Save</button>
+              <button class="btn btn-sec btn-sm" onclick="hideForm('eduForm')">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" id="pan-contact">
+          <h3 class="mb3">Contact Settings</h3>
+          <form id="contactForm">
+            <div class="form-group"><label class="form-label">Public Email</label><input type="email" class="form-input" id="cEmail" placeholder="contact@example.com"></div>
+            <div class="form-group"><label class="form-label">Phone (optional)</label><input type="tel" class="form-input" id="cPhone"></div>
+            <div class="form-group"><label class="form-label">LinkedIn URL</label><input type="url" class="form-input" id="cLink"></div>
+            <div class="form-group"><label class="form-label">GitHub URL</label><input type="url" class="form-input" id="cGit"></div>
+            <div class="form-group"><label class="form-label">Website URL</label><input type="url" class="form-input" id="cWeb"></div>
+            <button type="submit" class="btn btn-prim">Save Contact Info</button>
+          </form>
+          <div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border)">
+            <h4 style="color:var(--bad);margin-bottom:1rem">Danger Zone</h4>
+            <p style="color:var(--text3);font-size:0.9375rem;margin-bottom:1rem">Permanently delete your account and all portfolio data. This cannot be undone.</p>
+            <button class="btn btn-dang" id="delAccountBtn">Delete My Account</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="common.js"></script>
+<script>
+async function refreshLists() {
+  const { profile } = await api('GET', '/api/profile/me');
+  renderLists(profile);
+}
+
+function renderLists(profile) {
+  const pList = document.getElementById('projList');
+  pList.innerHTML = (profile.projects || []).length
+    ? profile.projects.map(p =>
+        '<div class="item"><div><h4>' + esc(p.name) + '</h4><p>' + esc((p.description || '').substring(0, 70)) + '</p></div>' +
+        '<div><button class="icn del" onclick="delProj(' + p.id + ')">Del</button></div></div>'
+      ).join('')
+    : '<p style="color:var(--text3);text-align:center;padding:2rem">No projects yet. Click "Add Project" to get started.</p>';
+
+  const eList = document.getElementById('expList');
+  eList.innerHTML = (profile.experience || []).length
+    ? profile.experience.map(e =>
+        '<div class="item"><div><h4>' + esc(e.role) + '</h4><p>' + esc(e.company) + ' &bull; ' + esc(e.start) + ' - ' + esc(e.end) + '</p></div>' +
+        '<div><button class="icn del" onclick="delExp(' + e.id + ')">Del</button></div></div>'
+      ).join('')
+    : '<p style="color:var(--text3);text-align:center;padding:2rem">No experience entries yet.</p>';
+
+  const edList = document.getElementById('eduList');
+  edList.innerHTML = (profile.education || []).length
+    ? profile.education.map(ed =>
+        '<div class="item"><div><h4>' + esc(ed.degree) + '</h4><p>' + esc(ed.institution) + ' &bull; ' + esc(ed.year) + '</p></div>' +
+        '<div><button class="icn del" onclick="delEdu(' + ed.id + ')">Del</button></div></div>'
+      ).join('')
+    : '<p style="color:var(--text3);text-align:center;padding:2rem">No education entries yet.</p>';
+}
+
+function switchTab(ev, tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  ev.target.classList.add('on');
+  document.getElementById('pan-' + tab).classList.add('on');
+}
+
+function showForm(id) { document.getElementById(id).classList.remove('hid'); }
+function hideForm(id) { document.getElementById(id).classList.add('hid'); }
+
+document.getElementById('profileForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  try {
+    const body = {
+      firstName: document.getElementById('pFname').value,
+      lastName: document.getElementById('pLname').value,
+      title: document.getElementById('pTitle').value,
+      location: document.getElementById('pLoc').value,
+      bio: document.getElementById('pBio').value,
+      skills: document.getElementById('pSkills').value
+    };
+    await api('PUT', '/api/profile', body);
+    toast('Profile saved successfully!', 'ok');
+  } catch (e2) { toast(e2.message, 'no'); }
+});
+
+async function saveProj() {
+  try {
+    await api('POST', '/api/projects', {
+      name: document.getElementById('prName').value,
+      description: document.getElementById('prDesc').value,
+      tech: document.getElementById('prTech').value,
+      link: document.getElementById('prLink').value
+    });
+    hideForm('projForm');
+    ['prName', 'prDesc', 'prTech', 'prLink'].forEach(id => document.getElementById(id).value = '');
+    await refreshLists();
+    toast('Project added!', 'ok');
+  } catch (e) { toast(e.message, 'no'); }
+}
+async function delProj(id) {
+  try { await api('DELETE', '/api/projects/' + id); await refreshLists(); toast('Project removed.', 'info'); }
+  catch (e) { toast(e.message, 'no'); }
+}
+
+async function saveExp() {
+  try {
+    await api('POST', '/api/experience', {
+      role: document.getElementById('exRole').value,
+      company: document.getElementById('exComp').value,
+      start: document.getElementById('exStart').value,
+      end: document.getElementById('exEnd').value,
+      description: document.getElementById('exDesc').value
+    });
+    hideForm('expForm');
+    ['exRole', 'exComp', 'exStart', 'exEnd', 'exDesc'].forEach(id => document.getElementById(id).value = '');
+    await refreshLists();
+    toast('Experience added!', 'ok');
+  } catch (e) { toast(e.message, 'no'); }
+}
+async function delExp(id) {
+  try { await api('DELETE', '/api/experience/' + id); await refreshLists(); toast('Experience removed.', 'info'); }
+  catch (e) { toast(e.message, 'no'); }
+}
+
+async function saveEdu() {
+  try {
+    await api('POST', '/api/education', {
+      institution: document.getElementById('edInst').value,
+      degree: document.getElementById('edDeg').value,
+      year: document.getElementById('edYear').value,
+      description: document.getElementById('edDesc').value
+    });
+    hideForm('eduForm');
+    ['edInst', 'edDeg', 'edYear', 'edDesc'].forEach(id => document.getElementById(id).value = '');
+    await refreshLists();
+    toast('Education added!', 'ok');
+  } catch (e) { toast(e.message, 'no'); }
+}
+async function delEdu(id) {
+  try { await api('DELETE', '/api/education/' + id); await refreshLists(); toast('Education removed.', 'info'); }
+  catch (e) { toast(e.message, 'no'); }
+}
+
+document.getElementById('contactForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  try {
+    await api('PUT', '/api/profile/contact', {
+      email: document.getElementById('cEmail').value,
+      phone: document.getElementById('cPhone').value,
+      linkedin: document.getElementById('cLink').value,
+      github: document.getElementById('cGit').value,
+      website: document.getElementById('cWeb').value
+    });
+    toast('Contact info saved!', 'ok');
+  } catch (e2) { toast(e2.message, 'no'); }
+});
+
+document.getElementById('delAccountBtn').addEventListener('click', async () => {
+  if (!confirm('Are you absolutely sure? This will permanently delete your account, portfolio, and all messages. This cannot be undone.')) return;
+  try {
+    await api('DELETE', '/api/account');
+    toast('Account permanently deleted.', 'ok');
+    window.location.href = 'index.html';
+  } catch (e) { toast(e.message, 'no'); }
+});
+
+(async () => {
+  const user = await getSession();
+  if (!user) { window.location.href = 'auth.html'; return; }
+  updateNav(user);
+
+  const portUrl = 'portfolio.html?id=' + user.id;
+  document.getElementById('viewPortLink').href = portUrl;
+  document.getElementById('previewLink').href = portUrl;
+
+  const { profile } = await api('GET', '/api/profile/me');
+  document.getElementById('pFname').value = profile.firstName || '';
+  document.getElementById('pLname').value = profile.lastName || '';
+  document.getElementById('pTitle').value = profile.title || '';
+  document.getElementById('pLoc').value = profile.location || '';
+  document.getElementById('pBio').value = profile.bio || '';
+  document.getElementById('pSkills').value = (profile.skills || []).join(', ');
+  const ct = profile.contact || {};
+  document.getElementById('cEmail').value = ct.email || '';
+  document.getElementById('cPhone').value = ct.phone || '';
+  document.getElementById('cLink').value = ct.linkedin || '';
+  document.getElementById('cGit').value = ct.github || '';
+  document.getElementById('cWeb').value = ct.website || '';
+  renderLists(profile);
+})();
+</script>
+</body>
+</html>

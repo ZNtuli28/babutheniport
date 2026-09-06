@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify Email — Babutheni</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="toast-box" id="toastBox"></div>
+
+<nav>
+  <div class="container nav-inner">
+    <a class="logo" href="index.html" style="text-decoration:none">
+      <div class="logo-icon">B</div>
+      Babutheni
+    </a>
+    <ul class="nav-links" id="navLinks"></ul>
+    <div class="nav-actions"></div>
+  </div>
+</nav>
+
+<section class="auth-page">
+  <div class="auth-card fade txt-c">
+    <div class="auth-icon">V</div>
+    <h2>Verify your email</h2>
+    <p class="mt2 mb3" id="verifySub">We've sent a 6-digit verification code to your email. It expires in 10 minutes.</p>
+    <form id="otpForm">
+      <div class="form-group">
+        <input type="text" class="form-input" id="otpIn" placeholder="Enter 6-digit code" maxlength="6" style="text-align:center;letter-spacing:0.5em;font-size:1.25rem;font-weight:700">
+      </div>
+      <div class="err" id="otpErr"></div>
+      <button type="submit" class="btn btn-prim" style="width:100%">Verify Email</button>
+    </form>
+    <p class="mt3" style="font-size:0.875rem;color:var(--text3)">Didn't receive it? <button type="button" onclick="resendOtp()" style="color:var(--accent);background:none;border:none;cursor:pointer;font-family:inherit;font-weight:600">Resend code</button></p>
+  </div>
+</section>
+
+<script src="common.js"></script>
+<script>
+const pendingEmail = sessionStorage.getItem('pendingEmail');
+
+document.getElementById('otpForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const otp = document.getElementById('otpIn').value.trim();
+  const err = document.getElementById('otpErr');
+  err.classList.remove('show');
+  try {
+    await api('POST', '/api/auth/verify-otp', { email: pendingEmail, otp });
+    sessionStorage.removeItem('pendingEmail');
+    toast('Email verified! Welcome aboard.', 'ok');
+    window.location.href = 'dashboard.html';
+  } catch (e2) {
+    err.textContent = e2.message;
+    err.classList.add('show');
+  }
+});
+
+async function resendOtp() {
+  if (!pendingEmail) { toast('No pending verification.', 'no'); return; }
+  try {
+    await api('POST', '/api/auth/resend-otp', { email: pendingEmail });
+    toast('A new code has been sent to your email.', 'ok');
+  } catch (e) { toast(e.message, 'no'); }
+}
+
+(async () => {
+  // This page only makes sense mid-signup. No pending email means someone
+  // landed here directly - send them back to sign up first.
+  if (!pendingEmail) { window.location.href = 'auth.html'; return; }
+
+  // If somehow already logged in, skip straight to the dashboard.
+  const user = await getSession();
+  if (user) { window.location.href = 'dashboard.html'; return; }
+
+  document.getElementById('verifySub').textContent =
+    'We sent a 6-digit verification code to ' + pendingEmail + '. It expires in 10 minutes.';
+})();
+</script>
+</body>
+</html>

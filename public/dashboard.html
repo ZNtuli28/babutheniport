@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Babutheni</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="toast-box" id="toastBox"></div>
+
+<nav>
+  <div class="container nav-inner">
+    <a class="logo" href="index.html" style="text-decoration:none">
+      <div class="logo-icon">B</div>
+      Babutheni
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="catalog.html" style="color:var(--text2);text-decoration:none;font-size:0.875rem;font-weight:500">Catalog</a></li>
+      <li id="navDash" class="hid"><a href="dashboard.html" style="color:var(--text2);text-decoration:none;font-size:0.875rem;font-weight:500">Dashboard</a></li>
+      <li id="navBuild" class="hid"><a href="builder.html" style="color:var(--text2);text-decoration:none;font-size:0.875rem;font-weight:500">Builder</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="btn btn-ghost hid" id="navOut" onclick="doLogout()">Sign out</button>
+      <a class="btn btn-sec btn-sm hid" id="navIn" href="auth.html">Sign In</a>
+      <a class="btn btn-prim btn-sm hid" id="navUp" href="auth.html?mode=signup">Get Started</a>
+      <button class="mobile-btn" onclick="toggleMenu()">Menu</button>
+    </div>
+  </div>
+</nav>
+
+<main style="padding-top:64px">
+  <div class="container dash">
+    <div class="dash-head">
+      <h1>Dashboard</h1>
+      <p style="color:var(--text2)">Welcome back! Here's what's happening with your portfolio.</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><h3>Projects</h3><div class="stat-v" id="dProj">0</div></div>
+      <div class="stat"><h3>Messages</h3><div class="stat-v" id="dMsg">0</div></div>
+      <div class="stat"><h3>Profile Completion</h3><div class="stat-v" id="dComp">0%</div></div>
+    </div>
+    <div class="dash-grid">
+      <aside class="side">
+        <ul class="side-menu">
+          <li><button class="on">Overview</button></li>
+          <li><a href="builder.html" style="display:block;padding:0.7rem 1rem;color:var(--text2);text-decoration:none;font-size:0.9rem;font-weight:500">Edit Portfolio</a></li>
+          <li><a id="viewPortLink" href="#" style="display:block;padding:0.7rem 1rem;color:var(--text2);text-decoration:none;font-size:0.9rem;font-weight:500">View Portfolio</a></li>
+          <li><button onclick="doLogout()">Logout</button></li>
+        </ul>
+      </aside>
+      <div>
+        <div class="card mb3">
+          <div class="card-body">
+            <h3 class="mb3">Quick Actions</h3>
+            <div style="display:flex;gap:1rem;flex-wrap:wrap">
+              <a class="btn btn-prim" href="builder.html">Add Project</a>
+              <button class="btn btn-sec" id="dlCvBtn">Download CV</button>
+              <a class="btn btn-sec" id="viewLiveBtn" href="#">View Live</a>
+              <button class="btn btn-sec" id="copyLinkBtn">Copy Link</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <h3 class="mb3">Recent Messages</h3>
+            <div id="dMsgs"><p style="color:var(--text3);text-align:center;padding:2rem">No messages yet. Your contact form will appear here.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="common.js"></script>
+<script>
+let ME = null;
+
+async function renderDash() {
+  try {
+    const { profile } = await api('GET', '/api/profile/me');
+    const { messages } = await api('GET', '/api/messages');
+    document.getElementById('dProj').textContent = (profile.projects || []).length;
+    document.getElementById('dMsg').textContent = messages.length;
+    let comp = 20;
+    if (profile.bio) comp += 20;
+    if ((profile.projects || []).length > 0) comp += 20;
+    if ((profile.experience || []).length > 0) comp += 20;
+    if ((profile.education || []).length > 0) comp += 20;
+    document.getElementById('dComp').textContent = Math.min(comp, 100) + '%';
+
+    const box = document.getElementById('dMsgs');
+    if (messages.length === 0) {
+      box.innerHTML = '<p style="color:var(--text3);text-align:center;padding:2rem">No messages yet. Your contact form will appear here.</p>';
+    } else {
+      box.innerHTML = messages.slice(0, 3).map(m =>
+        '<div style="padding:1rem;border-bottom:1px solid var(--border)">' +
+        '<div style="display:flex;justify-content:space-between;margin-bottom:0.5rem"><strong>' + esc(m.name) + '</strong>' +
+        '<span style="color:var(--text3);font-size:0.8rem">' + new Date(m.createdAt).toLocaleDateString() + '</span></div>' +
+        '<p style="font-size:0.9rem">' + esc(m.message) + '</p>' +
+        '<p style="font-size:0.8rem;color:var(--text3);margin-top:0.25rem">' + esc(m.email) + '</p></div>'
+      ).join('');
+    }
+  } catch (e) { toast(e.message, 'no'); }
+}
+
+(async () => {
+  const user = await getSession();
+  if (!user) { window.location.href = 'auth.html'; return; }
+  ME = user;
+  updateNav(user);
+
+  const portUrl = 'portfolio.html?id=' + user.id;
+  document.getElementById('viewPortLink').href = portUrl;
+  document.getElementById('viewLiveBtn').href = portUrl;
+  document.getElementById('dlCvBtn').addEventListener('click', () => dlCV(user.id));
+  document.getElementById('copyLinkBtn').addEventListener('click', () => copyPortLink(user.id));
+
+  renderDash();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In — Babutheni</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="toast-box" id="toastBox"></div>
+
+<nav>
+  <div class="container nav-inner">
+    <a class="logo" href="index.html" style="text-decoration:none">
+      <div class="logo-icon">B</div>
+      Babutheni
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="catalog.html" style="color:var(--text2);text-decoration:none;font-size:0.875rem;font-weight:500">Catalog</a></li>
+      <li id="navDash" class="hid"><a href="dashboard.html" style="color:var(--text2);text-decoration:none;font-size:0.875rem;font-weight:500">Dashboard</a></li>
+      <li id="navBuild" class="hid"><a href="builder.html" style="color:var(--text2);text-decoration:none;font-size:0.875rem;font-weight:500">Builder</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="btn btn-ghost hid" id="navOut" onclick="doLogout()">Sign out</button>
+      <a class="btn btn-sec btn-sm hid" id="navIn" href="auth.html">Sign In</a>
+      <a class="btn btn-prim btn-sm hid" id="navUp" href="auth.html?mode=signup">Get Started</a>
+      <button class="mobile-btn" onclick="toggleMenu()">Menu</button>
+    </div>
+  </div>
+</nav>
+
+<section class="auth-page">
+  <div class="auth-card fade">
+    <div class="auth-head">
+      <div class="auth-icon">B</div>
+      <h2 id="authTitle">Welcome to Babutheni</h2>
+      <p id="authSub">Sign in to manage your portfolio.</p>
+    </div>
+    <form id="authForm">
+      <div class="form-group hid" id="gName">
+        <label class="form-label">Full Name</label>
+        <input type="text" class="form-input" id="inName" placeholder="Ndlelehle Ntuli">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="inEmail" placeholder="you@email.com" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="inPass" placeholder="Enter your password" required>
+      </div>
+      <div class="err" id="authErr"></div>
+      <button type="submit" class="btn btn-prim" style="width:100%" id="authBtn">Sign In</button>
+    </form>
+    <div class="auth-foot">
+      <p id="authToggle">Don't have an account? <button type="button" onclick="toggleAuthMode()">Sign up</button></p>
+    </div>
+  </div>
+</section>
+
+<script src="common.js"></script>
+<script>
+let isSignup = false;
+
+function applyMode() {
+  document.getElementById('gName').classList.toggle('hid', !isSignup);
+  document.getElementById('authBtn').textContent = isSignup ? 'Sign Up' : 'Sign In';
+  document.getElementById('authTitle').textContent = isSignup ? 'Create your account' : 'Welcome to Babutheni';
+  document.getElementById('authSub').textContent = isSignup ? 'Create your account to get started.' : 'Sign in to manage your portfolio.';
+  document.getElementById('authToggle').innerHTML = isSignup
+    ? 'Already have an account? <button type="button" onclick="toggleAuthMode()">Sign in</button>'
+    : "Don't have an account? <button type=\"button\" onclick=\"toggleAuthMode()\">Sign up</button>";
+  document.getElementById('authErr').classList.remove('show');
+}
+
+function toggleAuthMode() {
+  isSignup = !isSignup;
+  applyMode();
+}
+
+document.getElementById('authForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('inEmail').value.trim();
+  const pass = document.getElementById('inPass').value;
+  const err = document.getElementById('authErr');
+  err.classList.remove('show');
+  const btn = document.getElementById('authBtn');
+  const originalLabel = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Please wait...';
+
+  try {
+    if (isSignup) {
+      const name = document.getElementById('inName').value.trim();
+      if (!name) throw new Error('Please enter your name.');
+      const data = await api('POST', '/api/auth/signup', { name, email, password: pass });
+      sessionStorage.setItem('pendingEmail', data.email);
+      window.location.href = 'verify.html';
+    } else {
+      await api('POST', '/api/auth/login', { email, password: pass });
+      window.location.href = 'dashboard.html';
+    }
+  } catch (e2) {
+    err.textContent = e2.message;
+    err.classList.add('show');
+    btn.disabled = false;
+    btn.textContent = originalLabel;
+  }
+});
+
+(async () => {
+  // If already logged in, there's nothing to do here - go straight to the dashboard.
+  const user = await getSession();
+  if (user) { window.location.href = 'dashboard.html'; return; }
+
+  const params = new URLSearchParams(window.location.search);
+  isSignup = params.get('mode') === 'signup';
+  applyMode();
+})();
+</script>
+</body>
+</html>

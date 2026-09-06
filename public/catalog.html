@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catalog — Babutheni</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="toast-box" id="toastBox"></div>
+
+<nav>
+  <div class="container nav-inner">
+    <a class="logo" href="index.html" style="text-decoration:none">
+      <div class="logo-icon">B</div>
+      Babutheni
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="catalog.html" style="color:var(--text2);text-decoration:none;font-size:0.875rem;font-weight:500">Catalog</a></li>
+      <li id="navDash" class="hid"><a href="dashboard.html" style="color:var(--text2);text-decoration:none;font-size:0.875rem;font-weight:500">Dashboard</a></li>
+      <li id="navBuild" class="hid"><a href="builder.html" style="color:var(--text2);text-decoration:none;font-size:0.875rem;font-weight:500">Builder</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="btn btn-ghost hid" id="navOut" onclick="doLogout()">Sign out</button>
+      <a class="btn btn-sec btn-sm" id="navIn" href="auth.html">Sign In</a>
+      <a class="btn btn-prim btn-sm" id="navUp" href="auth.html?mode=signup">Get Started</a>
+      <button class="mobile-btn" onclick="toggleMenu()">Menu</button>
+    </div>
+  </div>
+</nav>
+
+<main style="padding-top:64px">
+  <div class="container" style="padding-top:4rem;padding-bottom:4rem">
+    <div class="sec-head">
+      <h2>Portfolio Catalog</h2>
+      <p>Discover professionals and their work.</p>
+    </div>
+    <div class="search-box mb4">
+      <input type="text" id="catSearch" placeholder="Search by name, skill, or location..." oninput="doSearch(this.value)">
+    </div>
+    <div class="cat-grid" id="catGrid"></div>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a class="logo" href="index.html" style="text-decoration:none"><div class="logo-icon">B</div>Babutheni</a>
+        <p>Professional portfolio builder. Showcase your work. Make an impression.</p>
+      </div>
+      <div class="foot-links"><h4>Product</h4><ul><li><a href="catalog.html">Catalog</a></li><li><a href="auth.html?mode=signup">Get Started</a></li><li><a href="auth.html">Sign In</a></li></ul></div>
+      <div class="foot-links"><h4>Legal</h4><ul><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li></ul></div>
+    </div>
+    <div class="foot-bot"><span>&copy; 2026 Babutheni. All rights reserved.</span><span>Built for final year students.</span></div>
+  </div>
+</footer>
+
+<script src="common.js"></script>
+<script>
+let searchTimer = null;
+
+async function renderCatalog() {
+  try {
+    const data = await api('GET', '/api/portfolios');
+    document.getElementById('catGrid').innerHTML = data.portfolios.map(portCard).join('') ||
+      '<p style="grid-column:1/-1;text-align:center;color:var(--text3);padding:3rem">No portfolios yet. Be the first to create one!</p>';
+  } catch (e) { toast(e.message, 'no'); }
+}
+
+function doSearch(query) {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(async () => {
+    try {
+      const data = await api('GET', '/api/portfolios?q=' + encodeURIComponent(query));
+      document.getElementById('catGrid').innerHTML = data.portfolios.map(portCard).join('') ||
+        '<p style="grid-column:1/-1;text-align:center;color:var(--text3);padding:3rem">No results found.</p>';
+    } catch (e) { toast(e.message, 'no'); }
+  }, 250);
+}
+
+(async () => {
+  const user = await getSession();
+  updateNav(user);
+  renderCatalog();
+})();
+</script>
+</body>
+</html>

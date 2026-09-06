@@ -1,0 +1,54 @@
+{
+  "users": [
+    {
+      "id": "8133e1e6-725a-4fea-a893-f6c8e7b81a2e",
+      "name": "Wandile Sibanyoni",
+      "email": "bongasendile@gmail.com",
+      "passwordHash": "$2a$10$FYOUFCvOb6ZRvMUtK1eSouR7n1VR7BbKxUEk52TXgxvoeY2cWzF/i",
+      "verified": true,
+      "createdAt": "2026-09-06T19:12:14.671Z"
+    }
+  ],
+  "otps": [],
+  "profiles": [
+    {
+      "userId": "8133e1e6-725a-4fea-a893-f6c8e7b81a2e",
+      "firstName": "Wandile",
+      "lastName": "Sibanyoni",
+      "title": "",
+      "location": "",
+      "bio": "",
+      "skills": [],
+      "projects": [],
+      "experience": [],
+      "education": [],
+      "contact": {
+        "email": "bongasendile@gmail.com",
+        "phone": "",
+        "linkedin": "",
+        "github": "",
+        "website": ""
+      }
+    }
+  ],
+  "messages": [
+    {
+      "id": 1788722661437,
+      "toUserId": "8133e1e6-725a-4fea-a893-f6c8e7b81a2e",
+      "name": "Nomhlekhabo Mnyakeni",
+      "email": "zntuli954@gmail.com",
+      "message": "Sure lepara dintshang??",
+      "createdAt": "2026-09-06T19:24:21.437Z",
+      "read": false
+    },
+    {
+      "id": 1788722680373,
+      "toUserId": "8133e1e6-725a-4fea-a893-f6c8e7b81a2e",
+      "name": "Nomhlekhabo Mnyakeni",
+      "email": "zntuli954@gmail.com",
+      "message": "Sure lepara dintshang??",
+      "createdAt": "2026-09-06T19:24:40.373Z",
+      "read": false
+    }
+  ]
+}

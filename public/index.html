@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Babutheni — Portfolio Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="toast-box" id="toastBox"></div>
+
+<nav>
+  <div class="container nav-inner">
+    <a class="logo" href="index.html" style="text-decoration:none">
+      <div class="logo-icon">B</div>
+      Babutheni
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="catalog.html" style="color:var(--text2);text-decoration:none;font-size:0.875rem;font-weight:500">Catalog</a></li>
+      <li id="navDash" class="hid"><a href="dashboard.html" style="color:var(--text2);text-decoration:none;font-size:0.875rem;font-weight:500">Dashboard</a></li>
+      <li id="navBuild" class="hid"><a href="builder.html" style="color:var(--text2);text-decoration:none;font-size:0.875rem;font-weight:500">Builder</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="btn btn-ghost hid" id="navOut" onclick="doLogout()">Sign out</button>
+      <a class="btn btn-sec btn-sm" id="navIn" href="auth.html">Sign In</a>
+      <a class="btn btn-prim btn-sm" id="navUp" href="auth.html?mode=signup">Get Started</a>
+      <button class="mobile-btn" onclick="toggleMenu()">Menu</button>
+    </div>
+  </div>
+</nav>
+
+<main style="padding-top:64px">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content fade">
+      <div class="tag">Portfolio builder for professionals</div>
+      <h1>Build a portfolio<br><span>that commands attention</span></h1>
+      <p>Create a polished, professional portfolio to showcase your projects, skills, and experience. Share it with the world in minutes.</p>
+      <div class="hero-btns">
+        <a class="btn btn-prim btn-lg" href="auth.html?mode=signup">Start Building</a>
+        <a class="btn btn-sec btn-lg" href="catalog.html">Browse Catalog</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="features">
+    <div class="container">
+      <div class="sec-head">
+        <h2>Everything you need</h2>
+        <p>A complete toolkit for building and managing your professional presence.</p>
+      </div>
+      <div class="feat-grid">
+        <div class="feat-card"><div class="feat-icon">P</div><h3>Custom Profiles</h3><p>Build a personalized portfolio that reflects your professional identity.</p></div>
+        <div class="feat-card"><div class="feat-icon">S</div><h3>Project Showcase</h3><p>Display your best work with descriptions, tech stacks, and live demo links.</p></div>
+        <div class="feat-card"><div class="feat-icon">E</div><h3>Experience Timeline</h3><p>Present your career trajectory with a clean, scannable visual timeline.</p></div>
+        <div class="feat-card"><div class="feat-icon">D</div><h3>Education & Certs</h3><p>Showcase your academic background and professional certifications.</p></div>
+        <div class="feat-card"><div class="feat-icon">M</div><h3>Direct Messaging</h3><p>Let collaborators and clients reach you directly through your portfolio page.</p></div>
+        <div class="feat-card"><div class="feat-icon">A</div><h3>Live Dashboard</h3><p>Manage your profile, projects, experience, and messages from one place.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="catalog" style="background:var(--bg2)">
+    <div class="container">
+      <div class="sec-head">
+        <h2>Portfolio Catalog</h2>
+        <p>Discover professionals and their work.</p>
+      </div>
+      <div class="cat-grid" id="homeGrid"></div>
+      <div class="txt-c mt4">
+        <a class="btn btn-sec" href="catalog.html">View All Portfolios</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-sec">
+    <div class="container">
+      <div class="cta-box">
+        <h2>Ready to build your portfolio?</h2>
+        <p>Join the community and create a portfolio that stands out. It takes just a few minutes.</p>
+        <a class="btn btn-prim btn-lg" href="auth.html?mode=signup">Get Started Free</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a class="logo" href="index.html" style="text-decoration:none"><div class="logo-icon">B</div>Babutheni</a>
+        <p>Professional portfolio builder. Showcase your work. Make an impression.</p>
+      </div>
+      <div class="foot-links"><h4>Product</h4><ul><li><a href="catalog.html">Catalog</a></li><li><a href="auth.html?mode=signup">Get Started</a></li><li><a href="auth.html">Sign In</a></li></ul></div>
+      <div class="foot-links"><h4>Legal</h4><ul><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li></ul></div>
+    </div>
+    <div class="foot-bot"><span>&copy; 2026 Babutheni. All rights reserved.</span><span>Siuuuuuu.</span></div>
+  </div>
+</footer>
+
+<script src="common.js"></script>
+<script>
+async function renderHome() {
+  try {
+    const data = await api('GET', '/api/portfolios');
+    document.getElementById('homeGrid').innerHTML = data.portfolios.slice(0, 3).map(portCard).join('') ||
+      '<p style="grid-column:1/-1;text-align:center;color:var(--text3);padding:3rem">No portfolios yet. Be the first to create one!</p>';
+  } catch (e) { toast(e.message, 'no'); }
+}
+
+(async () => {
+  const user = await getSession();
+  updateNav(user);
+  renderHome();
+})();
+</script>
+</body>
+</html>
