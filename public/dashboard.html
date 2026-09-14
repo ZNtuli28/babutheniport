@@ -10,6 +10,9 @@
 <body>
 <div class="toast-box" id="toastBox"></div>
 
+<div class="night-sky"></div>
+<canvas class="star-field" id="dashStars"></canvas>
+
 <nav>
   <div class="container nav-inner">
     <a class="logo" href="index.html" style="text-decoration:none">
@@ -104,6 +107,91 @@ async function renderDash() {
     }
   } catch (e) { toast(e.message, 'no'); }
 }
+
+// Twinkling star field — covers the full page background
+(function(){
+  const canvas = document.getElementById('dashStars');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  let shootingStar = null;
+  let shootingTimer = 0;
+
+  function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = document.documentElement.scrollHeight;
+  }
+
+  function createStars(){
+    const count = Math.max(50, Math.floor((canvas.width * canvas.height) / 4500));
+    stars = Array.from({ length: count }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.4 + 0.3,
+      alpha: Math.random() * 0.7 + 0.15,
+      twinkle: Math.random() * 0.02 + 0.005,
+      dir: Math.random() > 0.5 ? 1 : -1
+    }));
+  }
+
+  function maybeSpawnShootingStar(){
+    shootingTimer--;
+    if (!shootingStar && shootingTimer <= 0) {
+      shootingStar = {
+        x: Math.random() * canvas.width * 0.6,
+        y: Math.random() * canvas.height * 0.3,
+        len: 60 + Math.random() * 40,
+        speed: 6 + Math.random() * 3,
+        angle: Math.PI / 5,
+        life: 1
+      };
+      shootingTimer = 200 + Math.random() * 300;
+    }
+  }
+
+  function draw(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    stars.forEach(s => {
+      s.alpha += s.twinkle * s.dir;
+      if (s.alpha <= 0.1 || s.alpha >= 0.9) s.dir *= -1;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${s.alpha})`;
+      ctx.fill();
+    });
+
+    maybeSpawnShootingStar();
+    if (shootingStar) {
+      const dx = Math.cos(shootingStar.angle) * shootingStar.len;
+      const dy = Math.sin(shootingStar.angle) * shootingStar.len;
+      const grad = ctx.createLinearGradient(shootingStar.x, shootingStar.y, shootingStar.x - dx, shootingStar.y - dy);
+      grad.addColorStop(0, `rgba(255,255,255,${shootingStar.life})`);
+      grad.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(shootingStar.x, shootingStar.y);
+      ctx.lineTo(shootingStar.x - dx, shootingStar.y - dy);
+      ctx.stroke();
+
+      shootingStar.x += Math.cos(shootingStar.angle) * shootingStar.speed;
+      shootingStar.y += Math.sin(shootingStar.angle) * shootingStar.speed;
+      shootingStar.life -= 0.02;
+      if (shootingStar.life <= 0 || shootingStar.x > canvas.width || shootingStar.y > canvas.height) {
+        shootingStar = null;
+      }
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  createStars();
+  draw();
+  window.addEventListener('resize', () => { resize(); createStars(); });
+  new ResizeObserver(() => { resize(); createStars(); }).observe(document.body);
+})();
 
 (async () => {
   const user = await getSession();

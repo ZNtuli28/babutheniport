@@ -99,3 +99,46 @@ function portCard(p) {
     '<div class="port-body"><div class="skills">' + skills + more + '</div></div>' +
     '<div class="port-foot"><span style="color:var(--text3);font-size:0.85rem">@' + p.id.slice(0, 8) + '</span><span class="arr">View Portfolio</span></div></a>';
 }
+
+// ==================== THEME TOGGLE ====================
+// Applied site-wide. Reads/writes the saved preference and auto-creates
+// the toggle button in the nav if a page doesn't already have one, so
+// every page picks this up without needing to paste markup into each file.
+(function () {
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved === 'light') root.classList.add('light-mode');
+
+  function buildToggle() {
+    const btn = document.createElement('button');
+    btn.className = 'theme-toggle';
+    btn.id = 'themeToggle';
+    btn.setAttribute('aria-label', 'Toggle light/dark mode');
+    btn.innerHTML = `
+      <span class="theme-toggle-track">
+        <span class="theme-toggle-icon sun">☀</span>
+        <span class="theme-toggle-icon moon">☾</span>
+        <span class="theme-toggle-knob"></span>
+      </span>`;
+    return btn;
+  }
+
+  function wireToggle(btn) {
+    btn.addEventListener('click', () => {
+      root.classList.toggle('light-mode');
+      localStorage.setItem('theme', root.classList.contains('light-mode') ? 'light' : 'dark');
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    let btn = document.getElementById('themeToggle');
+    if (!btn) {
+      const navActions = document.querySelector('.nav-actions');
+      if (navActions) {
+        btn = buildToggle();
+        navActions.insertBefore(btn, navActions.firstChild);
+      }
+    }
+    if (btn) wireToggle(btn);
+  });
+})();

@@ -31,15 +31,35 @@
 </nav>
 
 <main style="padding-top:64px">
-  <div class="container" style="padding-top:4rem;padding-bottom:4rem">
-    <div class="sec-head">
-      <h2>Portfolio Catalog</h2>
-      <p>Discover professionals and their work.</p>
+  <div class="catalog-top">
+    <div class="hero-bg">
+      <div class="hero-sunset"></div>
+      <svg class="hero-waves" viewBox="0 0 1440 320" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path class="wave wave1" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,213.3C672,224,768,224,864,202.7C960,181,1056,139,1152,138.7C1248,139,1344,181,1392,202.7L1440,224L1440,320L0,320Z"></path>
+        <path class="wave wave2" d="M0,160L48,176C96,192,192,224,288,213.3C384,203,480,149,576,138.7C672,128,768,160,864,181.3C960,203,1056,213,1152,197.3C1248,181,1344,139,1392,117.3L1440,96L1440,320L0,320Z"></path>
+        <path class="wave wave3" d="M0,288L60,272C120,256,240,224,360,224C480,224,600,256,720,266.7C840,277,960,267,1080,245.3C1200,224,1320,192,1380,176L1440,160L1440,320L0,320Z"></path>
+      </svg>
+      <canvas class="hero-particles" id="catalogParticles"></canvas>
     </div>
-    <div class="search-box mb4">
-      <input type="text" id="catSearch" placeholder="Search by name, skill, or location..." oninput="doSearch(this.value)">
+
+    <div class="container" style="position:relative;z-index:1;padding-top:4rem;padding-bottom:4rem">
+      <div class="sec-head">
+        <h2>Portfolio Catalog</h2>
+        <p>Discover professionals and their work.</p>
+      </div>
+      <div class="search-box mb4">
+        <input type="text" id="catSearch" placeholder="Search by name, skill, or location..." oninput="doSearch(this.value)">
+      </div>
     </div>
-    <div class="cat-grid" id="catGrid"></div>
+  </div>
+
+  <div class="catalog">
+    <svg class="catalog-shore" viewBox="0 0 1440 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,64L80,80C160,96,320,128,480,122.7C640,117,800,75,960,69.3C1120,64,1280,96,1360,112L1440,128L1440,0L0,0Z"></path>
+    </svg>
+    <div class="container">
+      <div class="cat-grid" id="catGrid"></div>
+    </div>
   </div>
 </main>
 
@@ -79,6 +99,55 @@ function doSearch(query) {
     } catch (e) { toast(e.message, 'no'); }
   }, 250);
 }
+
+// Particle field — confined to the catalog header background only
+(function(){
+  const canvas = document.getElementById('catalogParticles');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const container = document.querySelector('.catalog-top');
+  let particles = [];
+
+  function resize(){
+    canvas.width = container.clientWidth;
+    canvas.height = container.clientHeight;
+  }
+
+  function createParticles(){
+    const count = Math.max(24, Math.floor((canvas.width * canvas.height) / 9000));
+    particles = Array.from({ length: count }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.6 + 0.4,
+      speedY: Math.random() * 0.3 + 0.06,
+      speedX: (Math.random() - 0.5) * 0.12,
+      alpha: Math.random() * 0.6 + 0.2,
+      twinkle: Math.random() * 0.015 + 0.004,
+      dir: Math.random() > 0.5 ? 1 : -1
+    }));
+  }
+
+  function draw(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.y -= p.speedY;
+      p.x += p.speedX;
+      p.alpha += p.twinkle * p.dir;
+      if (p.alpha <= 0.15 || p.alpha >= 0.85) p.dir *= -1;
+      if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width; }
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(210,225,255,${p.alpha})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  createParticles();
+  draw();
+  window.addEventListener('resize', () => { resize(); createParticles(); });
+})();
 
 (async () => {
   const user = await getSession();

@@ -7,6 +7,14 @@
       "passwordHash": "$2a$10$FYOUFCvOb6ZRvMUtK1eSouR7n1VR7BbKxUEk52TXgxvoeY2cWzF/i",
       "verified": true,
       "createdAt": "2026-09-06T19:12:14.671Z"
+    },
+    {
+      "id": "c510ca9f-0197-4cfe-9604-c9e38ae8ff85",
+      "name": "Andile8man.",
+      "email": "buthelezia776@gmail.com",
+      "passwordHash": "$2a$10$h3hMkKiAZFtpXe3dk036x.7qi.GU/hsd2rv3MJ3iHcmMpmLSex0sa",
+      "verified": true,
+      "createdAt": "2026-09-14T15:03:19.408Z"
     }
   ],
   "otps": [],
@@ -24,6 +32,25 @@
       "education": [],
       "contact": {
         "email": "bongasendile@gmail.com",
+        "phone": "",
+        "linkedin": "",
+        "github": "",
+        "website": ""
+      }
+    },
+    {
+      "userId": "c510ca9f-0197-4cfe-9604-c9e38ae8ff85",
+      "firstName": "Andile8man.",
+      "lastName": "",
+      "title": "",
+      "location": "",
+      "bio": "",
+      "skills": [],
+      "projects": [],
+      "experience": [],
+      "education": [],
+      "contact": {
+        "email": "buthelezia776@gmail.com",
         "phone": "",
         "linkedin": "",
         "github": "",
